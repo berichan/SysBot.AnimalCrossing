@@ -37,8 +37,8 @@ steps:
     configuration: '$(Configuration)'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: SysBot-ACNH'
+  displayName: 'Publish Artifact: SysBot-ACNH-Extra'
   inputs:
     PathtoPublish: 'bin\Release\net47'
-    ArtifactName: SysBot-ACNH
+    ArtifactName: SysBot-ACNH-Extra
   condition: succeededOrFailed()
