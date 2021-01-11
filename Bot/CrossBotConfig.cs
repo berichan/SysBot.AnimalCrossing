@@ -49,6 +49,9 @@ namespace SysBot.AnimalCrossing
         /// <summary> When enabled, the Bot will inject the requested item into the entire inventory, instead of just the first slot. You will lose your entire inventory if there are already items present. </summary>
         public bool InjectToEntireInventory { get; set; } = true;
 
+        /// <summary> When enabled, the Bot will always fetch the dodo code from RAM before displaying it when "dodo" or "code" is called </summary>
+        public bool AlwaysRefetchDodo { get; set; } = true;
+
         #endregion
 
         public bool CanUseCommandUser(ulong authorId) => Users.Count == 0 || Users.Contains(authorId);

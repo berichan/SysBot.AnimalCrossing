@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord.Commands;
 using NHSE.Core;
@@ -31,7 +32,10 @@ namespace SysBot.AnimalCrossing
         [RequireQueueRole(nameof(Globals.Bot.Config.RoleUseBot))]
         public async Task RequestDodoCodeAsync()
         {
-            await ReplyAsync($"Dodo Code: {Globals.Bot.DodoCode}.").ConfigureAwait(false);
+            var bot = Globals.Bot;
+            if (bot.Config.AlwaysRefetchDodo)
+                await bot.UpdateDodo(CancellationToken.None);
+            await ReplyAsync($"Dodo Code: {bot.DodoCode}.").ConfigureAwait(false);
         }
 
         private const string DropItemSummary =
