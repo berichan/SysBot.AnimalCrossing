@@ -35,10 +35,10 @@ namespace SysBot.AnimalCrossing
             await Task.Delay(200, token).ConfigureAwait(false);
 
             // Auto get offset
-            Offset = await PlayerOffsetHelper.GetCurrentPlayerOffset(Connection, (uint)OffsetHelper.InventoryOffset, (uint)OffsetHelper.PlayerSize, token).ConfigureAwait(false);
+            Offset = await PlayerOffsetHelper.GetCurrentPlayerOffset((uint)OffsetHelper.InventoryOffset, (uint)OffsetHelper.PlayerSize, token).ConfigureAwait(false);
 
             // Validate inventory offset.
-            LogUtil.LogInfo("Checking inventory offset for validity.", Config.IP);
+            LogUtil.LogInfo($"Checking inventory offset (0x{Offset:X8}) for validity.", Config.IP);
             var valid = await GetIsPlayerInventoryValid(Offset, token).ConfigureAwait(false);
             if (!valid)
             {
@@ -136,7 +136,7 @@ namespace SysBot.AnimalCrossing
                 var items = PocketInjectorAsync.GetEmptyInventory(40);
                 foreach (var i in items)
                     i.CopyFrom(item);
-                await PocketInjector?.Write(items, token);
+                await PocketInjector.Write(items, token);
             }
             else
             {
@@ -202,7 +202,7 @@ namespace SysBot.AnimalCrossing
         private async Task<string> GetLastArrival(uint offset, CancellationToken token)
         {
             var data = await Connection.ReadBytesAsync(offset, 0xC, token).ConfigureAwait(false);
-            var name = Encoding.Unicode.GetString(data).TrimEnd();
+            var name = Encoding.Unicode.GetString(data).TrimEnd('\0');
             return name;
         }
     }

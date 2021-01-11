@@ -4,7 +4,7 @@
 * Automatic offset handling for islands with multiple profiles.
 * Automatic Dodo code retrieval & update from RAM whenever `$dodo` or `$code` is called. You may turn this off in the config and sudoers may update the code via `$fetchDodo`, otherwise `$overrideDodo`
 * Injections will fill the entire inventory by default (you may change this in the config)
-* Logs users arriving to your island with datestamps, and saves all logs to disk.
+* Logs users arriving to your island with datestamps and count for that day, and it saves all logs to disk (in logs/arrivals). You can view the last arriver with `$last`
 
 ## Other Dependencies
 Animal Crossing API logic is provided by [NHSE](https://github.com/kwsch/NHSE/).

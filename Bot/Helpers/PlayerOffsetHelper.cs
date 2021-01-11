@@ -8,14 +8,14 @@ namespace SysBot.AnimalCrossing
 {
     public static class PlayerOffsetHelper
     {
-        public static async Task<uint> GetCurrentPlayerOffset(SwitchConnectionAsync connection, uint rootInventoryOffset, uint playerSize, CancellationToken token)
+        public static async Task<uint> GetCurrentPlayerOffset(uint rootInventoryOffset, uint playerSize, CancellationToken token)
         {
-            var names = await FetchPlayerNames(connection, rootInventoryOffset, playerSize, token).ConfigureAwait(false);
-            LogUtil.LogText($"Found the following players on your island: {string.Join(", ", names)}");
+            var names = await FetchPlayerNames(Globals.Bot.Connection, rootInventoryOffset, playerSize, token).ConfigureAwait(false);
+            LogUtil.LogInfo($"Found the following players on your island: {string.Join(", ", names)}", Globals.Bot.Config.IP);
             return rootInventoryOffset + (playerSize * ((uint)names.Length - 1));
         }
 
-        public static async Task<string[]> FetchPlayerNames(SwitchConnectionAsync connection, uint rootInventoryOffset, uint playerSize, CancellationToken token)
+        private static async Task<string[]> FetchPlayerNames(SwitchConnectionAsync connection, uint rootInventoryOffset, uint playerSize, CancellationToken token)
         {
             List<string> toRet = new List<string>();
             for (int i = 0; i < 8; ++i)

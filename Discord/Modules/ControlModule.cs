@@ -30,7 +30,7 @@ namespace SysBot.AnimalCrossing
         [Alias("fetchCode", "updateDodo")]
         [Summary("Pulls the current dodo from memory.")]
         [RequireSudo]
-        public async Task FetchDodo()
+        public async Task FetchDodoAsync()
         {
             var bot = Globals.Bot;
             await bot.UpdateDodo(CancellationToken.None).ConfigureAwait(false);
@@ -56,6 +56,15 @@ namespace SysBot.AnimalCrossing
         {
             bool value = (Globals.Bot.Config.AcceptingCommands ^= true);
             await ReplyAsync($"Accepting drop requests: {value}.").ConfigureAwait(false);
+        }
+
+        [Command("lastArrival")]
+        [Alias("last", "lastArriver", "arriver")]
+        [Summary("Toggles accepting drop requests.")]
+        [RequireSudo]
+        public async Task ShowLastArriverAsync()
+        {
+            await ReplyAsync($"Last arrival: {Globals.Bot.LastArrival}").ConfigureAwait(false);
         }
     }
 }

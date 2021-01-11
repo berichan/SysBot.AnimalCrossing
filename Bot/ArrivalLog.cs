@@ -10,8 +10,13 @@ namespace SysBot.AnimalCrossing
     public class ArrivalLog
     {
         private const string FileNameFormat = "ArrivalLog{0}.txt";
+        private readonly string ArrivalLogDirectory = Path.Combine("logs", "arrivals");
 
-        public ArrivalLog() { }
+        public ArrivalLog() 
+        {
+            if (!Directory.Exists(ArrivalLogDirectory))
+                Directory.CreateDirectory(ArrivalLogDirectory);
+        }
 
         public string UpdateLog(string newArrival, string dateTimeFormat = "HH:mm:ss tt")
         {
@@ -34,7 +39,9 @@ namespace SysBot.AnimalCrossing
         public string GetFileNameToday()
         {
             var today = DateTime.Today;
-            return string.Format(FileNameFormat, today.ToString("yyyyMMdd"));
+            var fileName = string.Format(FileNameFormat, today.ToString("yyyyMMdd"));
+            var path = Path.Combine(ArrivalLogDirectory, fileName);
+            return path;
         }
     }
 }
