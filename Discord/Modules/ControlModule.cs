@@ -33,7 +33,7 @@ namespace SysBot.AnimalCrossing
         public async Task FetchDodo()
         {
             var bot = Globals.Bot;
-            await bot.UpdateDodo((uint)OffsetHelper.DodoOffset, CancellationToken.None);
+            await bot.UpdateDodo(CancellationToken.None).ConfigureAwait(false);
             var code = bot.DodoCode;
             await ReplyAsync($"The dodo code for the bot has been set to {code}.").ConfigureAwait(false);
         }

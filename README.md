@@ -4,6 +4,7 @@
 * Automatic offset handling for islands with multiple profiles.
 * Automatic Dodo code retrieval & update from RAM via `$fetchDodo`
 * Injections will fill the entire inventory by default (you may change this in settings)
+* Logs users arriving to your island with datestamps
 
 ## Other Dependencies
 Animal Crossing API logic is provided by [NHSE](https://github.com/kwsch/NHSE/).

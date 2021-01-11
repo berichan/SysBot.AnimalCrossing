@@ -10,10 +10,12 @@ namespace SysBot.AnimalCrossing
     public sealed class CrossBot : SwitchRoutineExecutor<CrossBotConfig>
     {
         public readonly ConcurrentQueue<ItemRequest> Injections = new();
+        public readonly ArrivalLog Arrivals = new();
         public readonly PocketInjectorAsync PocketInjector;
         public bool CleanRequested { private get; set; }
         public string DodoCode { get; set; } = "No code set yet.";
         public uint Offset { get; set; } = (uint)OffsetHelper.InventoryOffset;
+        public string LastArrival { get; set; } = string.Empty;
 
         public readonly DropBotState State;
 
@@ -50,7 +52,10 @@ namespace SysBot.AnimalCrossing
             PocketInjector.WriteOffset = Offset;
 
             // Prefetch first dodo
-            await UpdateDodo((uint)OffsetHelper.DodoOffset, CancellationToken.None);
+            await UpdateDodo(CancellationToken.None).ConfigureAwait(false);
+
+            // Don't add the last arrival while the bot wasn't running to the log
+            LastArrival = await GetArriver(token).ConfigureAwait(false);
 
             LogUtil.LogInfo("Successfully connected to bot. Starting main loop!", Config.IP);
             while (!token.IsCancellationRequested)
@@ -59,6 +64,15 @@ namespace SysBot.AnimalCrossing
 
         private async Task DropLoop(CancellationToken token)
         {
+            // Check for new users (even if not accepting commands)
+            var newArriver = await GetArriver(token).ConfigureAwait(false);
+            if (newArriver != LastArrival)
+            {
+                LastArrival = newArriver;
+                var arrival = Arrivals.UpdateLog(LastArrival);
+                LogUtil.LogInfo($"A visitor is arriving: {arrival}", Config.IP);
+            }
+
             if (!Config.AcceptingCommands)
             {
                 await Task.Delay(1_000, token).ConfigureAwait(false);
@@ -150,11 +164,14 @@ namespace SysBot.AnimalCrossing
                 await Click(SwitchButton.B, 0_400, token).ConfigureAwait(false);
         }
 
-        public async Task UpdateDodo(uint offset, CancellationToken token)
+        public async Task UpdateDodo(CancellationToken token)
         {
+            var offset = (uint)OffsetHelper.DodoOffset;
             LogUtil.LogInfo($"Attempting to update Dodo code from offset {offset}. Last Dodo code was: {DodoCode}", Config.IP);
             DodoCode = await FetchDodo(offset, token);
         }
+
+        public async Task<string> GetArriver(CancellationToken token) => await GetLastArrival((uint)OffsetHelper.ArriverNameLocAddress, token);
 
         private async Task CleanUp(int count, CancellationToken token)
         {
@@ -180,6 +197,13 @@ namespace SysBot.AnimalCrossing
             var dodo = Encoding.UTF8.GetString(data, 0, 5);
             LogUtil.LogInfo($"Fetched Dodo code: {dodo}.", Config.IP);
             return dodo;
+        }
+
+        private async Task<string> GetLastArrival(uint offset, CancellationToken token)
+        {
+            var data = await Connection.ReadBytesAsync(offset, 0xC, token).ConfigureAwait(false);
+            var name = Encoding.Unicode.GetString(data).TrimEnd();
+            return name;
         }
     }
 }
